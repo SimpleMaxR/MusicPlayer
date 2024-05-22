@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
@@ -85,18 +86,26 @@ fun MusicPlayerScreen(){
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
             // 专辑封面
             Image(
-                painter = painterResource(R.drawable.dream_cover),
-                contentDescription = "shows the ocean, water is blue",
+                painter = painterResource(id = currentCover),
+                contentDescription = "The song's cover image",
                 modifier = Modifier,
                 contentScale = ContentScale.Fit
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            //状态信息
+            Text(text = status, style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.ExtraBold
+            ))
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // 操作按钮
             Row(modifier = Modifier) {
                 IconButton(onClick = {
                     context.startService(Intent(context, MusicService::class.java).apply { action = "PLAY" })
@@ -117,16 +126,23 @@ fun MusicPlayerScreen(){
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // 下一首按钮
             Button(onClick = {
                 context.startService(Intent(context, MusicService::class.java).apply { action = "NEXT" })
-                status = "Play Next"
-            },
-                modifier = Modifier
+                status = "Playing"
+                // 更新专辑封面资源 ID
+                if (currentCover == R.drawable.dream_cover) {
+                    currentCover = R.drawable.sweet_cover
+                } else {
+                    currentCover = R.drawable.dream_cover
+                }
+            }, modifier = Modifier
                     .clip(RoundedCornerShape(0.dp)
                 )) {
                 Text(text = "Next")
             }
             Spacer(modifier = Modifier.height(16.dp))
+
         }
     }
 }
